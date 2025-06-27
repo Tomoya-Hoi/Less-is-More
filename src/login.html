@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/osql.js"></script>
+
+    <script>
+        osql.requireLogin();
+    </script>
+  </head>
+
+  <body>
+    <h1>Less is More</h1>
+    <h2>Login</h2>
+    userid:<input id="userIdForm" value="" type="textfield">
+    <br>
+    password:<input id="passwordForm" value="" type="password">
+    <br>
+    <button onclick="loginButtonPressed()">Login</button>
+  </body>
+</html>

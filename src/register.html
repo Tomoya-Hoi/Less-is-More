@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/osql.js"></script>
+
+    <script>
+      osql.requireLogin();
+
+      function registerButtonPressed() {
+        execInsert();
+      }
+
+      async function execInsert(){
+        var userid   = document.getElementById('useridForm').value;
+        var password = document.getElementById('passwordForm').value;
+        var username = document.getElementById('usernameForm').value;
+
+        var sql = `insert into Users (id, password, name) values("${userid}", "${password}", "${username}");`;
+        var objects = await osql.connect(sql)
+        console.log(objects);
+        document.getElementById('result').innerHTML = 'OK';
+      }
+    </script>
+  </head>
+
+  <body>
+    <h1>Less is More</h1>
+    <h2>Registration</h2>
+    userID:<input id="useridForm" value="testid" type="textfield">
+    <br>
+    password:<input id="passwordForm" value="testpass" type="password">
+    <br>
+    username:<input id="usernameForm" value="testuser" type="textfield">
+    <br>
+    <button onclick="registerButtonPressed()">Register</button>
+    <br>
+    <p id="result"></p>
+  </body>
+</html>

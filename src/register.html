@@ -14,11 +14,11 @@
       }
 
       async function execInsert(){
-        var userid   = document.getElementById('useridForm').value;
+        //var userid   = document.getElementById('useridForm').value;
         var password = document.getElementById('passwordForm').value;
         var username = document.getElementById('usernameForm').value;
 
-        var sql = `insert into Users (id, password, name) values("${userid}", "${password}", "${username}");`;
+        var sql = `insert into users (password, username) values("${password}", "${username}");`;
         var objects = await osql.connect(sql)
         console.log(objects);
         document.getElementById('result').innerHTML = 'OK';
@@ -29,12 +29,9 @@
   <body>
     <h1>Less is More</h1>
     <h2>Registration</h2>
-    userID:<input id="useridForm" value="testid" type="textfield">
-    <br>
-    password:<input id="passwordForm" value="testpass" type="password">
-    <br>
-    username:<input id="usernameForm" value="testuser" type="textfield">
-    <br>
+
+    password:<input id="passwordForm" value="testpass" type="password"><br>
+    username:<input id="usernameForm" value="testuser" type="textfield"><br>
     <button onclick="registerButtonPressed()">Register</button>
     <br>
     <p id="result"></p>

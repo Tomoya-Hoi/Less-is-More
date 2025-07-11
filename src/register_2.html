@@ -30,6 +30,12 @@
         return object;
       }
 
+      function validateData(){
+        console.log("function validateData()");
+
+        
+      }
+
       function makeSQL(object) {
         console.log("function makeSQL()");
         const sql = `insert into users (password, username) values("${object.password}", "${object.username}");`;

@@ -15,26 +15,29 @@
         main();
       })
 
-      function main() {
-        
+      async function main() {
+        const sql = makeSQL();
+        const res = await doSQL(sql);
+        const html = makeHTML(res);
+
       }
 
-      async function execSelect() {
-        var sql = 'select * from users';
-        var objects = await osql.connect(sql);
-        console.log(objects);
-        var html = '';
-        html = html + '<table border="1">';
+      function makeSQL() {
+        console.log("makeSQL()");
 
-        for (var i = 0; i < objects.length; i++) {
-          html = html + '<tr>';
-          var object = objects[i];
-          html = html + '<td>' + object.id + '</td>';
-          html = html + '<td>' + object.name + '</td>';
-          html = html + '</tr>';
-        }
+        const sql = `SELECT * FROM users`
         
-        html = html + '</table>';
+        return sql;
+      }
+
+      async function doSQL(sql) {
+        console.log("doSQL()");
+
+        const result = await osql.connect(sql);
+        console.log("result = ", result);
+        document.getElementById('result').innerHTML = 'OK';
+
+        return result;
       }
     </script>
   </head>
@@ -55,7 +58,7 @@
        <!-- ここにデータを埋め込む -->
      </tbody>
   </table>
-
+    <p id="result"></p><br>
 
   </body>
 </html>

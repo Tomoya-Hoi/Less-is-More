@@ -7,9 +7,9 @@
     <script type="text/javascript" src="../lib/osql.js"></script>
 
     <script>osql.requireLogin();</script>
-    
+
     <script>
-      function registerButtonPressed() {
+      function loginButtonPressed() {
         main();
       }
 
@@ -38,7 +38,7 @@
         const object = {username, password};
 
         return object;
-      }
+      }      
 
       function cleanData(data) {
         console.log("cleanData()");
@@ -60,10 +60,9 @@
         return data;
       }
 
-
       function makeSQL(data) {
         console.log("makeSQL()");
-        const sql = `insert into users (password, username) values("${data.password}", "${data.username}");`;
+        const sql = `select * from users where username = "${data.username}" and password = "${data.password}";`;
         console.log("sql =", sql);
 
         return sql;
@@ -74,20 +73,21 @@
         const result = await osql.connect(sql);
         console.log("result = ", result);
         document.getElementById('result').innerHTML = 'OK';
+
         return result;
       }
-
+  
     </script>
   </head>
 
   <body>
     <h1>Less is More</h1>
-    <h2>Registration</h2>
+    <h2>Login</h2>
 
     username:<input id="usernameForm" value="testuser" type="textfield"><br>
     password:<input id="passwordForm" value="testpass" type="password"><br>
-    
-    <button onclick="registerButtonPressed()">Register</button><br>
+
+    <button onclick="loginButtonPressed()">Login</button><br>
     <p id="result"></p><br>
 
   </body>

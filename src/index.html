@@ -6,18 +6,84 @@
     <script type="text/javascript" src="../lib/jquery.min.js"></script>
     <script type="text/javascript" src="../lib/osql.js"></script>
 
+    <script> osql.requireLogin(); </script>
+    
     <script>
-        osql.requireLogin();
+      async function main() {
+        const sql = makeSQL();
+        const res = await doSQL();
+        const html = makeHTML();
+
+      }
+
+      function makeSQL() {
+        const sql = `
+          SELECT 
+            r.id AS resource_id,
+            r.title,
+            r.url,
+            r.created_at,
+            u.username
+          GROUP_CONCAT(t.name) AS tags
+          FROM resources r
+          LEFT JOIN users u ON r.user_id = u.id
+          LEFT JOIN resource_tag_map rt ON r.id = rt.resource_id
+          LEFT JOIN tags t ON rt.tag_id = t.id
+          GROUP BY r.id
+          ORDER BY r.created_at DESC;`
+        
+        return sql;
+      }
+
+      async function doSQL(sql) {
+        console.log("doSQL()");
+        const result = await osql.connect(sql);
+        console.log("result = ", result);
+        document.getElementById('result').innerHTML = 'OK';
+        return result;
+      }
     </script>
+
   </head>
 
   <body>
     <h1>Less is More</h1>
-    <h2>Login</h2>
-    userid:<input id="userIdForm" value="" type="textfield">
-    <br>
-    password:<input id="passwordForm" value="" type="password">
-    <br>
-    <button onclick="loginButtonPressed()">Login</button>
+
+    <ul>
+      <li><a href="login.html">ログイン</a></li>
+      <li><a href="register.html">新規登録</a></li>
+    <ul>
+
+    <div id="resource-list"></div>
+
+    <h2>投稿一覧</h2>
+<table id="resource-table" border="1" style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th>タイトル</th>
+      <th>投稿者</th>
+      <th>タグ</th>
+      <th>投稿日</th>
+      <th>リンク</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Common LispでLispAlien描いてみた！</td>
+      <td>alice</td>
+      <td>#Lisp #関数型 #作品</td>
+      <td>2025-07-12</td>
+      <td><a href="https://example.com" target="_blank">見る</a></td>
+    </tr>
+    <tr>
+      <td>F#で素数計算器つくった</td>
+      <td>bob</td>
+      <td>#F# #関数型 #数学</td>
+      <td>2025-07-10</td>
+      <td><a href="https://github.com/example" target="_blank">見る</a></td>
+    </tr>
+  </tbody>
+</table>
+
   </body>
 </html>

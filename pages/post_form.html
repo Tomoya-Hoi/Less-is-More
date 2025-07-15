@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script type="text/javascript" src="../lib/jquery.min.js"></script>
+  <script type="text/javascript" src="../lib/osql.js"></script>
+  <link rel="stylesheet" href="../style/post_form.css" />
+  <title>新規投稿</title>
+</head>
+
+<body>
+  <h2>新しい投稿</h2>
+  <form id="postForm">
+    <label for="title">タイトル</label>
+    <input type="text" id="title" name="title" value="foo" required />
+
+    <label for="content">内容</label>
+    <textarea id="content" name="content" rows="8" required>foo</textarea>
+
+    <label for="tag">タグ（カンマ区切り）</label>
+    <input type="text" id="tag" name="tag" value="#foo" placeholder="#Java, #オブジェクト指向" />
+
+    <button onclick="submitButtonPressed()" type="button">投稿する</button>
+  </form>
+
+  <script src="../script/post_form.js"></script>
+</body>
+</html>

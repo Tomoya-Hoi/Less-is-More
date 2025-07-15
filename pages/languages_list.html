@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/osql.js"></script>
+
+    <script>
+      osql.requireLogin();
+
+      window.onload = function () {
+        main();
+      }
+    </script>
+
+    <script>
+      async function main() {
+        console.log("main()");
+        const sql = makeSQL();
+        const langData = await doSQL(sql);
+        const html = makeHTML(langData);
+        const output = showHTML(html); 
+
+      }
+
+      function makeSQL() {
+        console.log("makeSQL()");
+        const sql = `SELECT * FROM languages`;
+        console.log(sql);
+        
+        return sql;
+      }
+
+      async function doSQL(sql) {
+        console.log("doSQL()");
+        const object = await osql.connect(sql);
+        console.log("object = ", object);
+
+        return object;
+      }
+
+      function makeHTML(data) {
+        console.log("makeHTML()");
+        let html = "";
+
+        html += `
+          <table border="1">
+            <thead>
+              <tr>
+                <th>name</th>
+                <th>description</th>
+                <th>popularity</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        data.forEach(lang => {
+          html += `
+            <tr>
+              <td>${lang.name}</td>
+              <td>${lang.description}</td>
+              <td>${lang.popularity}</td>
+            <tr>
+          `;
+        })
+        
+        html += `
+            </tbody>
+          </table>
+        `;
+
+        console.log(html);
+
+        return html;
+      }
+
+      function showHTML(data) {
+        console.log("showHTML()");
+        document.getElementById('langList').innerHTML = data;
+        return true;
+      }
+
+    </script>
+
+  </head>
+
+  <body>
+    <h1>Less is More</h1><br>
+    <h2>言語一覧</h2><br>
+    <p id="langList"></p><br>
+  </body>
+</html>

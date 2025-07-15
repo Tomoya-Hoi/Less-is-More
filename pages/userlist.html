@@ -19,46 +19,68 @@
         const sql = makeSQL();
         const res = await doSQL(sql);
         const html = makeHTML(res);
-
+        showHTML(html);
       }
 
       function makeSQL() {
         console.log("makeSQL()");
-
-        const sql = `SELECT * FROM users`
-        
+        const sql = `SELECT * FROM users`;
         return sql;
       }
 
       async function doSQL(sql) {
         console.log("doSQL()");
-
         const result = await osql.connect(sql);
         console.log("result = ", result);
         document.getElementById('result').innerHTML = 'OK';
-
         return result;
       }
+
+      function makeHTML(data) {
+        console.log("makeHTML()");
+        let html = `
+          <table border="1">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Password</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        
+        data.forEach(user => {
+          html += `
+            <tr>
+              <td>${user.id}</td>
+              <td>${user.username}</td>
+              <td>${user.password}</td>
+            </tr>
+          `;
+        });
+
+        html += `
+            </tbody>
+          </table>
+        `;
+
+        return html;
+        }
+
+      function showHTML(html) {
+        console.log("showHTML()");
+        document.getElementById('userlist').innerHTML = html;
+      }
+
     </script>
   </head>
 
   <body>
     <h1>Less is More</h1>
     <h2>[For Admin Only] Userlist</h2>
-    <table>
-     <thead>
-       <tr>
-         <th>id</th>
-         <th>username</th>
-         <th>password</th>
-         <th>role</th>
-       </tr>
-     </thead>
-     <tbody>
-       <!-- ここにデータを埋め込む -->
-     </tbody>
-  </table>
     <p id="result"></p><br>
+    <p id="userlist"></p><br>
 
   </body>
 </html>

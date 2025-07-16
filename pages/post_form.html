@@ -12,7 +12,14 @@
 
 <body>
   <h2>新しい投稿</h2>
+  
+
   <form id="postForm">
+    <div>
+      <label for="user_id_display">ユーザーID</label>
+      <input type="text" id="user_id_display" disabled />
+    </div>
+
     <label for="title">タイトル</label>
     <input type="text" id="title" name="title" value="foo" required />
 
@@ -22,7 +29,7 @@
     <label for="tag">タグ（カンマ区切り）</label>
     <input type="text" id="tag" name="tag" value="#foo" placeholder="#Java, #オブジェクト指向" />
 
-    <button onclick="submitButtonPressed()" type="button">投稿する</button>
+    <button id="submitBtn" onclick="submitButtonPressed()" type="button">投稿する</button>
   </form>
 
   <script src="../script/post_form.js"></script>

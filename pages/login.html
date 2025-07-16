@@ -5,126 +5,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script type="text/javascript" src="../lib/jquery.min.js"></script>
     <script type="text/javascript" src="../lib/osql.js"></script>
-
-    <script>
-      osql.requireLogin();
-    
-      window.onload = function () {
-        if (checkSession()) {
-          jumpIndex();
-        }
-      }
-    </script>
-
-    <script>
-      function loginButtonPressed() {
-        main();
-      }
-
-      async function main() {
-        console.log("main()");
-
-        const rawData = getFormData({
-          username: 'usernameForm',
-          password: 'passwordForm'
-        });
-        const cleanedData = cleanData(rawData);
-        const validatedData = validateData(cleanedData);
-        const sql = makeSQL(validatedData);
-        const userData = await doSQL(sql);
-        const session = makeSession(userData);
-        checkSession();
-        jumpIndex();
-
-        return true;
-      }
-
-      // function getFormData() {
-      //   console.log("getFormData()");
-      //   const username = document.getElementById('usernameForm').value;
-      //   const password = document.getElementById('passwordForm').value;
-      //   const object = {username, password};
-      //   console.log(object);
-
-      //   return object;
-      // }      
-
-      function getFormData(mapping) {
-        console.log("getFormData()");
-
-        const object = {};
-        for (const [key, id] of Object.entries(mapping)) {
-          object[key] = document.getElementById(id).value;
-        }
-
-        console.log(object);
-        return object;
-      }      
-
-      function cleanData(data) {
-        console.log("cleanData()");
-        const username = data.username.replace(/\s+/g, '');
-        const password = data.password.replace(/\s+/g, '');
-        const object = {username, password};
-        console.log(object);
-        
-        return object;
-      }
-
-      function validateData(data) {
-        console.log("validateData()");
-        if (data.username === "" || data.password === "") {
-          const message = "ユーザーネーム、あるいはパスワードを入力してください。";
-          document.getElementById('result').innerHTML = message;
-          throw new Error(message);
-        }
-        console.log("true");
-
-        return data;
-      }
-
-      function makeSQL(data) {
-        console.log("makeSQL()");
-        const sql = `select username from users where username = "${data.username}" and password = "${data.password}";`;
-        console.log("sql =", sql);
-
-        return sql;
-      }
-
-      async function doSQL(sql) {
-        console.log("doSQL()");
-        const result = await osql.connect(sql);
-        document.getElementById('result').innerHTML = 'OK';
-        console.log("result = ", result);
-
-        return result;
-      }
-
-      function makeSession(data) {
-        if (data && data.length > 0) {
-          const user = data[0];
-          sessionStorage.setItem("user", JSON.stringify(user));
-          console.log("session: ", user);
-
-          return user;
-        } else {
-          console.warn("Failure to make session.")
-
-          return null;
-        }
-      }
-
-      function checkSession() {
-        const user = sessionStorage.getItem("user");
-
-        return user !== null;
-      }
-
-      function jumpIndex() {
-        window.location.href = "index.html";
-      }
-  
-    </script>
   </head>
 
   <body>
@@ -136,6 +16,6 @@
 
     <button onclick="loginButtonPressed()">Login</button><br>
     <p id="result"></p><br>
-
+    <script src="../script/login.js"></script>
   </body>
 </html>

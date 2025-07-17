@@ -11,7 +11,7 @@ window.onload = function () {
 };
 
 // メイン処理
-function testButtonPressed() {
+window.onload = function () {
   main();
 }
 
@@ -23,13 +23,61 @@ async function main() {
 }
 
 
+// function makeSQL() {
+//   console.log("makeSQL()");
+//   const sql = `
+//     SELECT 
+//       r.id AS resource_id,
+//       r.title,
+//       r.content,
+//       r.created_at,
+//       u.username,
+//       GROUP_CONCAT(t.name) AS tags
+//     FROM resources r
+//     JOIN users u ON r.user_id = u.id
+//     LEFT JOIN resource_tag_map rt ON r.id = rt.resource_id
+//     LEFT JOIN tags t ON rt.tag_id = t.id
+//     GROUP BY r.id
+//     ORDER BY r.created_at DESC
+//     LIMIT 16;
+//   `;
+
+//   console.log(sql);
+//   return sql.trim();
+// }
+
 function makeSQL() {
   console.log("makeSQL()");
   const sql = `
-    select * from resources
+    SELECT 
+      r.id AS resource_id,
+      r.title,
+      r.content,
+      r.created_at,
+      u.username,
+      GROUP_CONCAT(t.name) AS tags,
+      IFNULL(MAX(tag_counts.post_count), 0) AS tag_popularity
+    FROM resources r
+    JOIN users u ON r.user_id = u.id
+    LEFT JOIN resource_tag_map rt ON r.id = rt.resource_id
+    LEFT JOIN tags t ON rt.tag_id = t.id
+    LEFT JOIN (
+      SELECT 
+        tag_id,
+        COUNT(*) AS post_count
+      FROM resource_tag_map
+      GROUP BY tag_id
+    ) AS tag_counts ON rt.tag_id = tag_counts.tag_id
+    GROUP BY r.id
+    ORDER BY tag_popularity ASC, r.created_at DESC
+    LIMIT 16;
   `;
+
+  console.log(sql);
   return sql.trim();
 }
+
+
 
 async function doSQL(sql) {
   console.log("doSQL()");

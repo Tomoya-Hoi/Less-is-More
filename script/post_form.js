@@ -16,10 +16,40 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 
-//メイン処理
+//ボタン処理
 function submitButtonPressed() {
-    main();
+  main();
 }
+
+function backButtonPressed() {
+   window.location.href = "index.html";
+}
+
+//メイン処理
+// async function main() {
+//   console.log("main");
+
+//   const formData = getFormDataById({
+//     userId: "user_id_display",
+//     title: "title",
+//     content: "content",
+//     tag: "tag"
+//   });
+
+//   const cleaned = cleanData(formData);
+//   const tagId = await ensureTagExists(cleaned.tag);
+
+//   const sqls = generateSQL({
+//     ...cleaned,
+//     tag: tagId // タグ名をタグIDに置き換えて渡す
+//   });
+
+//   // 🔧 SQLを結合して一括実行（これでLAST_INSERT_IDが有効）
+//   const combinedSQL = sqls.join('\n');
+//   await osql.connect(combinedSQL);
+
+//   alert("投稿が完了しました！");
+// }
 
 async function main() {
   console.log("main");
@@ -32,21 +62,22 @@ async function main() {
   });
 
   const cleaned = cleanData(formData);
-  const tagId = await ensureTagExists(cleaned.tag);
+
+  // 複数タグ処理
+  const rawTags = cleaned.tag;
+  const tagList = rawTags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+  const tagIds = await ensureTagsExist(tagList);
 
   const sqls = generateSQL({
     ...cleaned,
-    tag: tagId // タグ名をタグIDに置き換えて渡す
+    tagIds: tagIds // 配列で渡す
   });
 
-  // 🔧 SQLを結合して一括実行（これでLAST_INSERT_IDが有効）
   const combinedSQL = sqls.join('\n');
   await osql.connect(combinedSQL);
 
   alert("投稿が完了しました！");
 }
-
-
 
 function getFormDataById(mapping) {
   console.log("getFormDataById()");
@@ -60,24 +91,33 @@ function getFormDataById(mapping) {
   return object;
 }
 
-async function ensureTagExists(tagName) {
-  const esc = (str) => str.replace(/'/g, "''");
-  const escapedTag = esc(tagName);
-
-  // タグが存在しなければ追加
-  const insertSQL = `INSERT IGNORE INTO tags (name) VALUES ('${escapedTag}');`;
-  await osql.connect(insertSQL);
-
-  // タグIDを取得
-  const selectSQL = `SELECT id FROM tags WHERE name = '${escapedTag}';`;
-  const res = await osql.connect(selectSQL);
-
-  if (res.length > 0) {
-    return res[0].id;
-  } else {
-    throw new Error("タグIDの取得に失敗しました");
+async function ensureTagsExist(tags) {
+  const tagIds = [];
+  for (const tagName of tags) {
+    const id = await ensureTagExists(tagName);
+    tagIds.push(id);
   }
+  return tagIds;
 }
+
+  async function ensureTagExists(tagName) {
+    const esc = (str) => str.replace(/'/g, "''");
+    const escapedTag = esc(tagName);
+
+    // タグが存在しなければ追加
+    const insertSQL = `INSERT IGNORE INTO tags (name) VALUES ('${escapedTag}');`;
+    await osql.connect(insertSQL);
+
+    // タグIDを取得
+    const selectSQL = `SELECT id FROM tags WHERE name = '${escapedTag}';`;
+    const res = await osql.connect(selectSQL);
+
+    if (res.length > 0) {
+      return res[0].id;
+    } else {
+      throw new Error("タグIDの取得に失敗しました");
+    }
+  }
 
 function cleanData(data) {
   console.log("cleanData()");
@@ -95,31 +135,56 @@ function cleanData(data) {
   return cleaned;
 }
 
+// function generateSQL(data) {
+//   console.log("generateSQL()");
+  
+//   const esc = (str) => str.replace(/'/g, "''"); // シングルクォートのエスケープ
+  
+//   const userId = esc(data.userId);
+//   const title = esc(data.title);
+//   const content = esc(data.content);
+//   const tag = esc(data.tag);
+  
+//   const resourceSql = `
+//     INSERT INTO resources (user_id, title, content)
+//     VALUES ('${userId}', '${title}', '${content}');
+//   `;
+  
+//   const tagSql = `
+//     INSERT INTO resource_tag_map (resource_id, tag_id)
+//     VALUES (LAST_INSERT_ID(), '${tag}');
+//   `;
+  
+//   const lst = [resourceSql.trim(), tagSql.trim()]; 
+
+//   console.log(lst);
+//   return lst;
+// }
+
 function generateSQL(data) {
   console.log("generateSQL()");
-  
-  const esc = (str) => str.replace(/'/g, "''"); // シングルクォートのエスケープ
-  
+
+  const esc = (str) => str.replace(/'/g, "''");
+
   const userId = esc(data.userId);
   const title = esc(data.title);
   const content = esc(data.content);
-  const tag = esc(data.tag);
-  
+  const tagIds = data.tagIds; // 配列
+
   const resourceSql = `
     INSERT INTO resources (user_id, title, content)
     VALUES ('${userId}', '${title}', '${content}');
   `;
-  
-  const tagSql = `
-    INSERT INTO resource_tag_map (resource_id, tag_id)
-    VALUES (LAST_INSERT_ID(), '${tag}');
-  `;
-  
-  const lst = [resourceSql.trim(), tagSql.trim()]; 
 
-  console.log(lst);
-  return lst;
+  // 複数タグ分のINSERT文を配列に作成
+  const tagSqls = tagIds.map(tagId => `
+    INSERT INTO resource_tag_map (resource_id, tag_id)
+    VALUES (LAST_INSERT_ID(), '${esc(tagId)}');
+  `.trim());
+
+  return [resourceSql.trim(), ...tagSqls];
 }
+
 
 async function doSQL(lst) {
   console.log("doSQL()");

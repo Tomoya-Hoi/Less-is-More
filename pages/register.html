@@ -30,6 +30,8 @@
         console.log(sql);
 
         const result = await doSQL(sql);
+
+        window.location.href = "index.html";
       }
 
       function getPersonalData() {
@@ -85,8 +87,8 @@
     <h1>Less is More</h1>
     <h2>Registration</h2>
 
-    username:<input id="usernameForm" value="testuser" type="textfield"><br>
-    password:<input id="passwordForm" value="testpass" type="password"><br>
+    username:<input id="usernameForm" value="" type="textfield"><br>
+    password:<input id="passwordForm" value="" type="password"><br>
     
     <button onclick="registerButtonPressed()">Register</button><br>
     <p id="result"></p><br>
